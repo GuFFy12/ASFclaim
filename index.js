@@ -2,19 +2,18 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const { Octokit } = require("@octokit/rest");
 const octokit = new Octokit();
-const webhook = require("webhook-discord");
 const config = require("config");
 const ipcurl = config.get("ipcurl");
 const ipcpassword = config.get("ipcpassword");
 const timeinterval = config.get("timeinterval");
 const claimlast = config.get("claimlast");
 const gistid = config.get("gistid");
-const sendwebhook = config.get("sendwebhook");
+const sendwebhook = true;
 if (sendwebhook == true) {
-  const webhook = require("webhook-discord");
+  var webhook = require("webhook-discord");
+  var webhookurl = config.get("webhookurl");
+  var Hook = new webhook.Webhook(webhookurl);
 }
-const webhookurl = config.get("webhookurl");
-const Hook = new webhook.Webhook(webhookurl);
 
 var launched = false;
 
