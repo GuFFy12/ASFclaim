@@ -10,11 +10,11 @@ const timeinterval = config.get("timeinterval");
 const claimlast = config.get("claimlast");
 const gistid = config.get("gistid");
 const sendwebhook = config.get("sendwebhook");
-const webhookurl = config.get("webhookurl");
-
 if (sendwebhook == true) {
-  const Hook = new webhook.Webhook(webhookurl);
+  const webhook = require("webhook-discord");
 }
+const webhookurl = config.get("webhookurl");
+const Hook = new webhook.Webhook(webhookurl);
 
 var launched = false;
 
