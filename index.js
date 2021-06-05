@@ -1,55 +1,123 @@
-const fetch = require("node-fetch")
-const fs = require("fs")
-const { Octokit } = require("@octokit/rest")
-const octokit = new Octokit()
+const fetch = require("node-fetch");
+const fs = require("fs");
+const { Octokit } = require("@octokit/rest");
+const octokit = new Octokit();
+const webhook = require("webhook-discord");
+const config = require("config");
+const ipcurl = config.get("ipcurl");
+const ipcpassword = config.get("ipcpassword");
+const timeinterval = config.get("timeinterval");
+const claimlast = config.get("claimlast");
+const gistid = config.get("gistid");
+const sendwebhook = config.get("sendwebhook");
+const webhookurl = config.get("webhookurl");
 
-let lastLength
-fs.readFile("lastlength", function read(err, data) {
-  if(!err && data) {
-    lastLength = data
-  } else if(err.code == "ENOENT") {
-    fs.writeFileSync("lastlength", "0")
-  } else {
-    console.log("Error with lastlength: ", err.code)
-  }
-})
+if (sendwebhook == true) {
+  const Hook = new webhook.Webhook(webhookurl);
+}
 
-checkGame()
-setInterval(checkGame, 6 * 60 * 60 * 1000) //Runs every six hours
-  
+var launched = false;
+
+lastlenghtfunc();
+let lastLength;
+function lastlenghtfunc() {
+  fs.readFile("lastlength", function read(err, data) {
+    if (!err && data) {
+      lastLength = data;
+    } else if (err.code == "ENOENT") {
+      fs.writeFileSync("lastlength", "0");
+      sendLog("info", "Looks like you first time run ASFClaim. Generate lastlength file...");
+    } else {
+      sendLog("err", "Error with lastlength: " + err.code);
+    }
+  });
+}
+
+checkGame();
+setInterval(checkGame, timeinterval * 60 * 60 * 1000);
 function checkGame() {
-  octokit.gists.get({ gist_id: "e8c5cf365d816f2640242bf01d8d3675" }).then(gist => {
-    let codes = gist.data.files['Steam Codes'].content.split("\n")
+  let command = { Command: "!status" };
+  fetch(ipcurl + "Api/Command/?password=" + ipcpassword, {
+    method: "post",
+    body: JSON.stringify(command),
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((res) => res.json())
+    .catch(() => {
+      sendLog("err", "Unable connect to IPC!");
+    })
+    .then((body) => {
+      if (body.Success) {
+        if (!launched) {
+          sendLog("info", "ASFClaim successfully launched!");
+          launched = true;
+          lastlenghtfunc();
+        }
+        claimGame();
+      }
+    });
+}
 
-    //THIS IS BAD, and definitely not scalable.
+function claimGame() {
+  octokit.gists.get({ gist_id: gistid }).then((gist) => {
+    let codes = gist.data.files["Steam Codes"].content.split("\n");
     if (lastLength < codes.length) {
-      if ((lastLength + 10) < codes.length) {
-        console.log("Only runs on the last 10 games")
-        lastLength = codes.length - 10
+      if (lastLength + claimlast < codes.length) {
+        sendLog("warn", "Only runs on the last " + claimlast + " games");
+        lastLength = codes.length - claimlast;
+        var countgames = codes.length - lastLength;
       }
-      let asfcommand = "!addlicense asf "
+      let asfcommand = "!addlicense asf ";
+      let claimlinks = "";
       for (lastLength; lastLength < codes.length; lastLength++) {
-        asfcommand += codes[lastLength]+","
+        asfcommand += codes[lastLength] + ", ";
+        if (codes[lastLength].indexOf("a/") > -1) {
+          claimlinks += codes[lastLength].replace("a/", "https://store.steampowered.com/app/") + ",\n";
+        } else {
+          claimlinks += codes[lastLength].replace("s/", "https://store.steampowered.com/sub/") + ",\n";
+        }
       }
-      asfcommand = asfcommand.slice(0, -1)
-
-      let command = {Command: asfcommand}
-      fetch("http://localhost:1242/Api/Command", {
+      asfcommand = asfcommand.slice(0, -2);
+      claimlinks = claimlinks.slice(0, -2);
+      let command = { Command: asfcommand };
+      fetch(ipcurl + "Api/Command/?password=" + ipcpassword, {
         method: "post",
         body: JSON.stringify(command),
-        headers: {"Content-Type": "application/json"}
+        headers: { "Content-Type": "application/json" },
       })
-        .then(res => res.json())
-        .then(body => {
-          if (body.Success){
-            console.log("Success: " + asfcommand)
-            fs.writeFileSync("lastlength", lastLength.toString())
+        .then((res) => res.json())
+        .then((body) => {
+          if (body.Success) {
+            if (claimlinks.length < 1000) {
+              sendLog("success", "Success claim " + countgames + " game(s):\n" + claimlinks);
+            } else {
+              sendLog("success", "Success claim " + countgames + " game(s) (many characters, sending without links):\n" + asfcommand.replace("!addlicense asf ", ""));
+            }
+            fs.writeFileSync("lastlength", lastLength.toString());
           } else {
-            console.log("Error: " + body)
+            sendLog("err", "Error: " + body);
           }
-        })
+        });
     } else {
-      console.log("Found: " + codes.length + " and has: " + lastLength)
+      sendLog("info", "New games not found: " + codes.length + "/" + lastLength);
     }
-  })
+  });
+}
+
+function sendLog(stat, msg) {
+  if (sendwebhook == true) {
+    if (stat == "err") {
+      Hook.err("ASFclaim", msg);
+    }
+    if (stat == "info") {
+      Hook.info("ASFclaim", msg);
+    }
+    if (stat == "warn") {
+      Hook.warn("ASFclaim", msg);
+    }
+    if (stat == "success") {
+      Hook.success("ASFclaim", msg);
+    }
+  }
+  console.log(msg);
 }
