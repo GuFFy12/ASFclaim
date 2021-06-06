@@ -8,11 +8,15 @@ const ipcpassword = config.get("ipcpassword");
 const timeinterval = config.get("timeinterval");
 const claimlast = config.get("claimlast");
 const gistid = config.get("gistid");
-const sendwebhook = true;
-if (sendwebhook == true) {
+const webhookurl = config.get("webhookurl");
+
+if (webhookurl.includes("https")) {
   var webhook = require("webhook-discord");
-  var webhookurl = config.get("webhookurl");
   var Hook = new webhook.Webhook(webhookurl);
+  var sendwebhook = true;
+} else {
+  sendLog("warn", "Discord webhook link is missing!");
+  var sendwebhook = false;
 }
 
 var launched = false;
