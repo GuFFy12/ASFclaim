@@ -1,5 +1,4 @@
 {
-  "sendwebhook": "true", //Use Discord to send info about grabbed games?
   "webhookurl": "", //Discord Webhook
   "ipcurl": "http://127.0.0.1:1242/", //ASF IPC Link
   "ipcpassword": "null", //If you set a IPC password paste your password, else set null
