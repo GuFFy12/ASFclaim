@@ -110,16 +110,16 @@ function claimGame() {
 function sendLog(stat, msg) {
   if (sendwebhook == true) {
     if (stat == "err") {
-      Hook.err("ASFclaim", msg);
+      Hook.err("ASFClaim", msg);
     }
     if (stat == "info") {
-      Hook.info("ASFclaim", msg);
+      Hook.info("ASFClaim", msg);
     }
     if (stat == "warn") {
-      Hook.warn("ASFclaim", msg);
+      Hook.warn("ASFClaim", msg);
     }
     if (stat == "success") {
-      Hook.success("ASFclaim", msg);
+      Hook.success("ASFClaim", msg);
     }
   }
   console.log(msg);
