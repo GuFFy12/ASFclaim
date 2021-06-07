@@ -11,3 +11,4 @@ All games claimed: https://gist.github.com/C4illin/e8c5cf365d816f2640242bf01d8d3
 4. `$ node .`
 
 or use asfclaim.service
+![image](https://user-images.githubusercontent.com/49491499/120989098-9c874800-c798-11eb-8160-e8aaa1176f6e.png)
