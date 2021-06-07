@@ -68,10 +68,10 @@ function claimGame() {
       if (lastLength + claimlast < codes.length) {
         sendLog("warn", "Only runs on the last " + claimlast + " games");
         lastLength = codes.length - claimlast;
-        var countgames = codes.length - lastLength;
       }
       let asfcommand = "!addlicense asf ";
       let claimlinks = "";
+      var countgames = codes.length - lastLength;
       for (lastLength; lastLength < codes.length; lastLength++) {
         asfcommand += codes[lastLength] + ", ";
         if (codes[lastLength].indexOf("a/") > -1) {
