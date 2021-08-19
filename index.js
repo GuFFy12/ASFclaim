@@ -40,7 +40,7 @@ checkGame();
 setInterval(checkGame, timeinterval * 60 * 60 * 1000);
 function checkGame() {
   let command = { Command: "!status" };
-  fetch(ipcurl + "Api/Command/", {
+  fetch(ipcurl + "Api/Command/?password=" + ipcpassword, {
     method: "post",
     body: JSON.stringify(command),
     headers: { "Content-Type": "application/json" },
