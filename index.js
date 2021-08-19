@@ -40,7 +40,7 @@ checkGame();
 setInterval(checkGame, timeinterval * 60 * 60 * 1000);
 function checkGame() {
   let command = { Command: "!status" };
-  fetch(ipcurl + "Api/Command/?password=" + ipcpassword, {
+  fetch(ipcurl + "Api/Command/", {
     method: "post",
     body: JSON.stringify(command),
     headers: { "Content-Type": "application/json" },
@@ -57,6 +57,9 @@ function checkGame() {
           lastlenghtfunc();
         }
         claimGame();
+      } else {
+        sendLog("err", "Error! Check console for more info!");
+        console.log(body);
       }
     });
 }
@@ -98,7 +101,8 @@ function claimGame() {
             }
             fs.writeFileSync("lastlength", lastLength.toString());
           } else {
-            sendLog("err", "Error: " + body);
+            sendLog("err", "Error! Check console for more info!");
+            console.log(body);
           }
         });
     } else {
