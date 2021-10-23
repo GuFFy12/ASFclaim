@@ -1,8 +1,0 @@
-{
-  "webhookurl": "", //Discord Webhook
-  "ipcurl": "http://127.0.0.1:1242/", //ASF IPC Link
-  "ipcpassword": "null", //If you set a IPC password paste your password, else set null
-  "timeinterval": "8", //Interval of check free games (hours)
-  "gistid": "e8c5cf365d816f2640242bf01d8d3675", //Change if you use your ASFInfo
-  "claimlast": "20" //Number of games taken on first launch
-}
