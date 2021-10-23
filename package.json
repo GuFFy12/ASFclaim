@@ -10,8 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "@octokit/rest": "^18.0.8",
-    "config": "^3.3.6",
-    "node-fetch": "^2.6.1",
     "webhook-discord": "^3.7.8"
   }
 }
