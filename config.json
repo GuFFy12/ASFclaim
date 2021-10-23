@@ -1,0 +1,8 @@
+{
+  "ipcUrl": "http://127.0.0.1:1242/",
+  "ipcPass": "null",
+  "webhookUrl": "",
+  "timeInterval": "24",
+  "gistId": "e8c5cf365d816f2640242bf01d8d3675",
+  "claimLast": "20"
+}
